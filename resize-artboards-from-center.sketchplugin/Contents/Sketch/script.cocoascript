@@ -1,0 +1,76 @@
+var onRun = function(context) {
+  var selection = context.selection
+
+  if (selection.length > 0){
+
+    var alert = buildDialog(selection.length)
+    var options = handleAlertResponse(alert, alert.runModal());
+
+    if ((!parseFloat(options['scale']) > 0) || (parseFloat(options['scale']) < 0)) {
+      context.document.showMessage("Please enter a positive percentage.")
+
+    } else {
+
+      for (var i = 0; i < selection.length; i++){
+        resize(selection[i])
+      }
+    }
+  } else {
+    context.document.showMessage("Select at least 1 artboard or symbol")
+  }
+
+  function resize(item) {
+    var oldX = item.frame().x());
+    var oldY = item.frame().y());
+    var oldW = item.frame().width();
+    var oldH = item.frame().height());
+
+    var scaleDecimal =  parseFloat(options['scale']) / 100;
+    item.multiplyBy(scaleDecimal);
+
+    item.frame().setX(parseFloat(oldX + oldW / 2 - item.frame().width() / 2));
+    item.frame().setY(parseFloat(oldY + oldH / 2 - item.frame().height() / 2));
+  }
+
+  function evaluate(value) {
+    value = eval(value.replace(/[^\d\-\*\.\+\/\(\)]/g, ''));
+    return value ? value : 0;
+  }
+
+  function handleAlertResponse(alert, responseCode) {
+    if (responseCode == "1000") {
+      function valAtIndex (view, index) {
+        return parseInt(evaluate(view.viewAtIndex(index).stringValue()));
+      }
+
+      return {
+        scale: evaluate(alert.viewAtIndex(1).stringValue())
+      }
+    }
+
+    return null;
+  }
+
+  function buildDialog(count){
+    var alert = COSAlertWindow.new();
+
+    function addFieldWithLabel(label,defaultValue) {
+      alert.addTextLabelWithValue(label);
+      alert.addTextFieldWithValue(defaultValue);
+    }
+
+    if (count > 1) { var lay = 'layers' } else { var lay = 'layer'}
+    alert.setMessageText("Scale " + count + " " + lay);
+
+    addFieldWithLabel("Scale in percent","");
+
+    alert.addButtonWithTitle('OK');
+    alert.addButtonWithTitle('Cancel');
+
+    var firstField = alert.viewAtIndex(1);
+    alert.alert().window().setInitialFirstResponder(firstField);
+    firstField.setNextKeyView(firstField);
+
+    return alert;
+  }
+};

@@ -1,0 +1,22 @@
+{
+  "name" : "Resize artboards from center",
+  "author" : "Matej Rajtar",
+  "description" : "Sketch plugin to scale selected artboards or symbols from center.",
+  "authorEmail" : "matej.rajtar@gmail.com",
+  "version" : "1.0",
+  "commands" : [
+    {
+      "script" : "script.cocoascript",
+      "handler" : "onRun",
+      "shortcut" : "cmd shift m",
+      "name" : "Resize selected",
+      "identifier" : "resize-artboards-from-center.resize-identifier"
+    }
+  ],
+  "menu" : {
+    "title" : "Resize artboards from center",
+    "items" : [
+      "resize-artboards-from-center.resize-identifier"
+    ]
+  },
+}
